@@ -1,0 +1,81 @@
+version: '3.4'
+services:
+  deluge:
+    container_name: deluge
+    image: linuxserver/deluge:latest
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID} # default user id, defined in .env
+      - PGID=${PGID} # default group id, defined in .env
+      - TZ=${TZ} # timezone, defined in .env
+    volumes:
+      - ${ROOT}/downloads:/downloads # downloads folder
+      - ${ROOT}/config/deluge:/config # config files
+#    ports:
+#    - ${DELUGE_UI_PORT}:8112
+#    - ${DELUGE_TORRENT_DAEMON_PORT}:58846
+    network_mode: host
+
+  jackett:
+    container_name: jackett
+    image: linuxserver/jackett:latest
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID} # default user id, defined in .env
+      - PGID=${PGID} # default group id, defined in .env
+      - TZ=${TZ} # timezone, defined in .env
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${ROOT}/downloads/torrent-blackhole:/downloads # place where to put .torrent files for manual download
+      - ${ROOT}/config/jackett:/config # config files
+#    ports:
+#      - ${JACKETT_PORT}:9117
+    network_mode: host
+
+  sonarr:
+    container_name: sonarr
+    image: linuxserver/sonarr:latest
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID} # default user id, defined in .env
+      - PGID=${PGID} # default group id, defined in .env
+      - TZ=${TZ} # timezone, defined in .env
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${ROOT}/config/sonarr:/config # config files
+      - ${ROOT}/complete/tv:/tv # tv shows folder
+      - ${ROOT}/downloads:/downloads # download folder
+#    ports:
+#      - ${SONARR_PORT}:8989
+    network_mode: host
+
+  radarr:
+    container_name: radarr
+    image: linuxserver/radarr:latest
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID} # default user id, defined in .env
+      - PGID=${PGID} # default group id, defined in .env
+      - TZ=${TZ} # timezone, defined in .env
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${ROOT}/config/radarr:/config # config files
+      - ${ROOT}/complete/movies:/movies # movies folder
+      - ${ROOT}/downloads:/downloads # download folder
+#    ports:
+#      - ${RADARR_PORT}:7878
+    network_mode: host
+
+  plex-server:
+    container_name: plex-server
+    image: plexinc/pms-docker:latest
+    restart: unless-stopped
+    environment:
+      - TZ=${TZ} # timezone, defined in .env
+    volumes:
+      - ${ROOT}/config/plex/db:/config # plex database
+      - ${ROOT}/config/plex/transcode:/transcode # temp transcoded files
+      - ${ROOT}/complete:/data # media library
+#    ports:
+#    - ${PLEX_PORT}:32400
+    network_mode: host
