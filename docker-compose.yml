@@ -79,3 +79,16 @@ services:
 #    ports:
 #    - ${PLEX_PORT}:32400
     network_mode: host
+
+  organizr:
+    image: linuxserver/organizr
+    container_name: organizr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${ROOT}/config/organizr:/config
+    ports:
+      - ${ORGANIZR_PORT}:80
+    restart: unless-stopped
